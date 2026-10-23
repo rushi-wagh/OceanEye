@@ -11,7 +11,7 @@ const isLoggedIn = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "Unauthorized request");
   }
 
-  const decodedToken = jwt.verify(token, process.env.JWT_SECRET || "change-this-secret");
+  const decodedToken = jwt.verify(token,process.env.JWT_SECRET);
   const user = await prisma.user.findUnique({
     where: { id: decodedToken.id },
   });
