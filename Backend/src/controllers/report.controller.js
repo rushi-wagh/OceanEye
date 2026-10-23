@@ -43,10 +43,7 @@ const getAll = asyncHandler(async (req, res) => {
   const { status } = req.query;
   const { scope } = req.query;
 
-  if (!user) {
-    throw new ApiError(401, "User is required");
-  }
-
+  
   const reports = scope === "public" ? await getReports(user, status, scope) : await getReports(user, status);
 
   return res
