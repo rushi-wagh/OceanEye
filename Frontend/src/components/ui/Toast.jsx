@@ -4,7 +4,7 @@ const ToastProvider = () => {
   return (
     <Toaster
       richColors
-      position="top-right"
+      position="bottom-right"
       toastOptions={{
         style: {
           background: "#0a1220",
