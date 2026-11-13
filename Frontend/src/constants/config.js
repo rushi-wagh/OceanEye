@@ -1,4 +1,5 @@
+const configuredApiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? "" : "http://localhost:8080");
+  configuredApiBaseUrl || (import.meta.env.DEV ? "" : "https://oceaneyee.onrender.com");
 
 export { API_BASE_URL };

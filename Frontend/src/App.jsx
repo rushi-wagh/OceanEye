@@ -5,7 +5,16 @@ import { useAuthStore } from "@/store/authStore";
 
 const App = () => {
   useEffect(() => {
+    const handleUnauthorized = () => {
+      useAuthStore.getState().clearAuth();
+    };
+
+    window.addEventListener("auth:unauthorized", handleUnauthorized);
     void useAuthStore.getState().initializeAuth();
+
+    return () => {
+      window.removeEventListener("auth:unauthorized", handleUnauthorized);
+    };
   }, []);
 
   return (

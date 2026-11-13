@@ -4,6 +4,7 @@ import { prisma } from "../utils/db.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { getAuthCookieOptions } from "../utils/authCookie.js";
 
 const generateToken = (user) => {
   return jwt.sign(
@@ -76,12 +77,7 @@ if (existing) {
 
   const token = generateToken(user);
 
-  return res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  })
+  return res.cookie("token", token, getAuthCookieOptions())
   .status(201).json(
     new ApiResponse(201, "User registered successfully", {
       user: removePassword(user),
@@ -116,12 +112,7 @@ const login = asyncHandler(async (req, res) => {
   const token = generateToken(user);
 
   return res
-    .cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
+    .cookie("token", token, getAuthCookieOptions())
     .status(200)
     .json(
       new ApiResponse(200, "User logged in successfully", {
@@ -157,7 +148,7 @@ const me = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", getAuthCookieOptions());
 
   return res
     .status(200)

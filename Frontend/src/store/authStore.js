@@ -22,6 +22,8 @@ const getUserFromPayload = (payload) => {
   return null;
 };
 
+let initializationPromise = null;
+
 const useAuthStore = create((set) => ({
   user: null,
   isAuthenticated: false,
@@ -45,30 +47,40 @@ const useAuthStore = create((set) => ({
     }),
 
   initializeAuth: async () => {
-    set({ isLoading: true, error: null });
-
-    try {
-      const response = await getCurrentUser();
-      const nextUser = getUserFromPayload(response);
-
-      set({
-        user: nextUser,
-        isAuthenticated: Boolean(nextUser),
-        isLoading: false,
-        error: null,
-      });
-
-      return nextUser;
-    } catch (error) {
-      set({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: error?.message || "Unable to restore the current session.",
-      });
-
-      return null;
+    if (initializationPromise) {
+      return initializationPromise;
     }
+
+    initializationPromise = (async () => {
+      set({ isLoading: true, error: null });
+
+      try {
+        const response = await getCurrentUser();
+        const nextUser = getUserFromPayload(response);
+
+        set({
+          user: nextUser,
+          isAuthenticated: Boolean(nextUser),
+          isLoading: false,
+          error: null,
+        });
+
+        return nextUser;
+      } catch (error) {
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: error?.message || "Unable to restore the current session.",
+        });
+
+        return null;
+      }
+    })().finally(() => {
+      initializationPromise = null;
+    });
+
+    return initializationPromise;
   },
 
   login: async (credentials) => {
@@ -145,6 +157,8 @@ const useAuthStore = create((set) => ({
       return true;
     } catch (error) {
       set({
+        user: null,
+        isAuthenticated: false,
         isLoading: false,
         error: error?.message || "Logout failed.",
       });

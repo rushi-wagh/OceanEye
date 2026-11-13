@@ -12,8 +12,10 @@ import { errorHandler, notFound } from "./src/middlewares/error.middleware.js";
 dotenv.config();
 
 const app = express();
+const frontendOrigin = process.env.FRONTEND_URL?.trim().replace(/\/$/, "");
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: frontendOrigin,
   credentials: true,
 }));
 app.use(cookieParser());
@@ -38,4 +40,3 @@ connectDb().then(() => {
     console.log(`Server is running on port ${process.env.PORT}`);
   });
 });
-
